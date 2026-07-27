@@ -1,15 +1,14 @@
 # 기업마당 API 호출 + mapper
-from datetime import datetime
-
 import requests
 from src.models import Program
+from src.date_utils import parse_date_or_none
 
 from src.config import BIZINFO_API_KEY
 ### 기업마당
 
 BIZINFO_URL = "https://www.bizinfo.go.kr/uss/rss/bizinfoApi.do"
 
-def fetch_bizinfo_data(dataType="json", pageUnit=10, pageIndex=1):
+def fetch_bizinfo_data(dataType="json", pageUnit=100, pageIndex=1):
     params = {
         "crtfcKey": BIZINFO_API_KEY,
         "dataType": dataType,
@@ -23,7 +22,7 @@ def fetch_bizinfo_data(dataType="json", pageUnit=10, pageIndex=1):
 import math
 import time
 
-def fetch_bizinfo_all(dataType="json", pageUnit=10):
+def fetch_bizinfo_all(dataType="json", pageUnit=100):
     first_page_params = {
         "crtfcKey": BIZINFO_API_KEY,
         "dataType": dataType,
@@ -44,21 +43,12 @@ def fetch_bizinfo_all(dataType="json", pageUnit=10):
     return all_items
 
 
-def _parse_date(value: str) -> str | None:
-    """'2026-07-21' 형태만 날짜로 인정하고, 아니면 None
-    (예: '2026년 4월', '예산 소진시까지' 같은 텍스트가 섞여 있는 경우 대비)"""
-    try:
-        return datetime.strptime(value.strip(), "%Y-%m-%d").date().isoformat()
-    except ValueError:
-        return None
-
-
 def bizinfo_to_program(raw: dict) -> Program:
 
     raw_period = raw.get("reqstBeginEndDe", "")
     if raw_period.count("~") == 1:
         start_raw, end_raw = raw_period.split("~")
-        start_date, end_date = _parse_date(start_raw), _parse_date(end_raw)
+        start_date, end_date = parse_date_or_none(start_raw), parse_date_or_none(end_raw)
     else:
         # "상시 접수마감시까지" 같은 날짜 범위가 아닌 값 - 날짜 정보 없이 저장
         start_date, end_date = None, None
