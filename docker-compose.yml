@@ -16,6 +16,18 @@ services:
       - 8081:8080
     volumes:
       - pg-data:/var/lib/postgresql # 18.4-trixie
-
+  api:
+    build: . # 현재 디렉토리의 Dockerfile을 사용하여 이미지 빌드
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      # DATABASE_URL을 여기서 정의 - 컨테이너끼리는 localhost가 아니라
+      # 서비스 이름(db)으로 통신한다는 걸 기억하고 채우기
+      POSTGRES_HOST: db # localhost가 아니라 서비스 이름
+      POSTGRES_PORT: 5432 # 컨테이너 내부 포트 (5433은 호스트에서 접근할 때만 쓰는 포트)
+    depends_on:
+      - db
 volumes:
   pg-data:
