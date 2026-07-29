@@ -1,0 +1,38 @@
+# 노드가 e2-medium x2(4GB RAM)짜리 작은 클러스터라, kube-prometheus-stack 기본값 그대로 쓰면
+# 리소스 부족이 날 수 있어 필요한 것만 가볍게 켠다.
+
+alertmanager:
+  enabled: false   # 포트폴리오 데모 목적이라 알림 라우팅까지는 불필요
+
+prometheus:
+  prometheusSpec:
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        memory: 512Mi
+    retention: 6h        # 짧게 - 디스크/메모리 아끼기
+    scrapeInterval: 30s
+
+grafana:
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      memory: 256Mi
+  persistence:
+    enabled: false   # 데모용이라 재시작 시 대시보드 초기화돼도 무방 (기본 대시보드는 자동 로드됨)
+
+kube-state-metrics:
+  resources:
+    requests:
+      cpu: 10m
+      memory: 32Mi
+
+prometheus-node-exporter:
+  resources:
+    requests:
+      cpu: 10m
+      memory: 16Mi
