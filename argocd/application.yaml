@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: k8s-devsecops
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/donghajang213/k8s_devsecops.git
+    targetRevision: main
+    path: k8s
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+  syncPolicy:
+    automated:
+      prune: true      # git에서 지워진 리소스는 클러스터에서도 자동으로 지움
+      selfHeal: true    # 클러스터 상태가 git과 달라지면(수동 kubectl 수정 등) 자동으로 되돌림
+    syncOptions:
+      - CreateNamespace=true

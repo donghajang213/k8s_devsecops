@@ -2,22 +2,26 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: db-migrate
+  annotations:
+    # ArgoCD 훅: Deployment 등 다른 리소스를 동기화하기 전에 먼저 실행됨
+    argocd.argoproj.io/hook: PreSync
+    # 다음 sync 때 새 Job을 만들기 전에 이전 Job을 지움 (Job은 spec 재적용이 불가능한 필드가 있어서 필요)
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
 spec:
-  backoffLimit: 0                # 디버깅 중: 재시도 없이 실패한 Pod를 그대로 남겨서 로그 확인
+  backoffLimit: 1
   template:
     spec:
-      restartPolicy: "Never"        # Never로 하면 실패해도 Pod가 안 지워지고 남음
-
+      restartPolicy: "Never"
       containers:
         - name: migrate
-          image: "asia-northeast3-docker.pkg.dev/k8s-devsecops-dh/k8s-devsecops/api:v1"
-          imagePullPolicy: Always   # :v1처럼 고정 태그를 재사용할 때, 캐시된 옛날 이미지 대신 항상 새로 받아오게
+          image: "asia-northeast3-docker.pkg.dev/k8s-devsecops-dh/k8s-devsecops/api:latest"
+          imagePullPolicy: Always
           command: ["uv", "run", "alembic", "upgrade", "head"]
           envFrom:
             - secretRef:
                 name: db-credentials
           env:
             - name: POSTGRES_HOST
-              value: "db"          # postgres.yaml에서 만든 Service 이름
+              value: "db"
             - name: POSTGRES_PORT
               value: "5432"

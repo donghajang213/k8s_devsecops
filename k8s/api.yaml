@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: api
-          image: "asia-northeast3-docker.pkg.dev/k8s-devsecops-dh/k8s-devsecops/api:v1"
+          image: "asia-northeast3-docker.pkg.dev/k8s-devsecops-dh/k8s-devsecops/api:latest"
           imagePullPolicy: Always
           envFrom:
             - secretRef:

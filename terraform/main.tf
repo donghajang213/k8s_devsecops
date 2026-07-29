@@ -6,6 +6,12 @@ resource "google_container_cluster" "primary" {
   # 기본 노드 풀은 만들자마자 제거하고, 아래 별도 node_pool 리소스를 쓴다
   remove_default_node_pool = true
   initial_node_count       = 1
+
+  # Workload Identity: K8s ServiceAccount가 GCP 서비스 계정을 대행할 수 있게 함
+  # (External Secrets Operator가 Secret Manager를 읽을 때, 정적 키 없이 인증하기 위해 필요)
+  workload_identity_config {
+    workload_pool = "${var.project_id}.svc.id.goog"
+  }
 }
 
 resource "google_container_node_pool" "primary_nodes" {
