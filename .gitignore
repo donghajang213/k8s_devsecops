@@ -14,5 +14,8 @@ wheels/
 .terraform/
 *.tfstate
 *.tfstate.backup
+tfplan
 kubeconfig
 *.kubeconfig
+k8s/secret.yaml
+

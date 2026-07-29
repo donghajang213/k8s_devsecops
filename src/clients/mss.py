@@ -6,7 +6,7 @@ import requests
 from src.config import MSS_SERVICE_KEY
 from src.models import Program
 from src.date_utils import parse_date_or_none
-import xml.etree.ElementTree as ET
+from defusedxml import ElementTree as ET   # 외부(신뢰 불가) XML 파싱이라 표준 라이브러리 대신 defusedxml 사용
 
 ### 공공데이터 포털
 
@@ -19,7 +19,7 @@ def fetch_mss_data(pageNo=1, numOfRows=100):
         "numOfRows": numOfRows
     }
 
-    response = requests.get(MSS_URL, params=params)
+    response = requests.get(MSS_URL, params=params, timeout=10)
     root = ET.fromstring(response.text)
 
     items = []
@@ -33,7 +33,7 @@ def fetch_mss_all(numOfRows=100):
         "pageNo": 1,
         "numOfRows": numOfRows
     }
-    first_response = requests.get(MSS_URL, params=first_page_params)
+    first_response = requests.get(MSS_URL, params=first_page_params, timeout=10)
     root = ET.fromstring(first_response.text)
     total_count = int(root.findtext(".//totalCount", default="0"))
     all_items = [

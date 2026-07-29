@@ -1,0 +1,52 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pvc
+spec:
+  accessModes: ["ReadWriteOnce"]        # 힌트: ReadWriteOnce (DB는 보통 파드 하나만 씀)
+  resources:
+    requests:
+      storage: "10Gi"           # 예: 5Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+        - name: postgres
+          image: "postgres:18.4-trixie"
+          envFrom:
+            - secretRef:
+                name: db-credentials     # 아까 만든 Secret을 통째로 환경변수로
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: postgres-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: db                     # 이 이름으로 API가 접근하게 됨 (POSTGRES_HOST=db)
+spec:
+  selector:
+    app: postgres
+  ports:
+    - port: 5432
+      targetPort: 5432

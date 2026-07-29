@@ -16,7 +16,7 @@ def fetch_bizinfo_data(dataType="json", pageUnit=100, pageIndex=1):
         "pageIndex": pageIndex
     }
 
-    response = requests.get(BIZINFO_URL, params=params)
+    response = requests.get(BIZINFO_URL, params=params, timeout=10)
     return response.json()["jsonArray"]
 
 import math
@@ -29,7 +29,7 @@ def fetch_bizinfo_all(dataType="json", pageUnit=100):
         "pageUnit": pageUnit,
         "pageIndex": 1,
     }
-    first_response = requests.get(BIZINFO_URL, params=first_page_params).json()
+    first_response = requests.get(BIZINFO_URL, params=first_page_params, timeout=10).json()
     all_items = first_response["jsonArray"]
     # totCnt는 최상위가 아니라 jsonArray 안 각 항목마다 들어있는 필드라 이렇게 꺼낸다.
     # (건수가 0이면 all_items가 비어있어 total도 0으로 처리)

@@ -9,6 +9,8 @@ RUN pip install uv && uv sync --frozen
 
 # 소스코드는 의존성 설치 이후에 복사
 COPY src/ ./src/
+COPY alembic.ini .
+COPY alembic/ ./alembic/
 
 EXPOSE 8000
 
