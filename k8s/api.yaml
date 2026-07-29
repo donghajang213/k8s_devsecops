@@ -14,7 +14,8 @@ spec:
     spec:
       automountServiceAccountToken: false   # 이 파드는 K8s API를 호출하지 않으니 토큰을 아예 안 붙임
       securityContext:
-        runAsNonRoot: true                  # Dockerfile에서 이미 non-root(appuser)로 만들어서 호환됨
+        runAsNonRoot: true
+        runAsUser: 1000                     # Dockerfile의 appuser UID와 동일 (숫자로 명시해야 runAsNonRoot 검증이 통과됨)
         seccompProfile:
           type: RuntimeDefault
       containers:
