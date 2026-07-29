@@ -19,3 +19,9 @@ kubeconfig
 *.kubeconfig
 k8s/secret.yaml
 
+# Tistory 초안용 학습 노트 - 블로그에만 올리고 리포에는 안 남김
+docs/dataengineer/
+docs/docker/
+docs/gcp/
+docs/terraform/
+
