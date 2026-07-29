@@ -24,6 +24,7 @@ spec:
       labels:
         app: postgres
     spec:
+      automountServiceAccountToken: false   # 이 파드도 K8s API를 호출하지 않으니 토큰 마운트 생략
       containers:
         - name: postgres
           image: "postgres:18.4-trixie"
